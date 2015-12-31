@@ -67,6 +67,20 @@ brew_install_or_upgrade() {
   fi
 }
 
+brew_cask_install_or_upgrade() {
+  if brew_is_installed "$1"; then
+    if brew_is_upgradable "$1"; then
+      fancy_echo "Upgrading %s ..." "$1"
+      brew upgrade "$@"
+    else
+      fancy_echo "Already using the latest version of %s. Skipping ..." "$1"
+    fi
+  else
+    fancy_echo "Installing %s ..." "$1"
+    brew cask install "$@"
+  fi
+}
+
 brew_is_installed() {
   local name="$(brew_expand_alias "$1")"
 
@@ -109,7 +123,7 @@ gem_install_or_update() {
   else
     fancy_echo "Installing %s ..." "$1"
     gem install "$@"
-    rbenv rehash
+    # rbenv rehash
   fi
 }
 
@@ -138,7 +152,7 @@ brew_launchctl_restart 'postgresql'
 brew_install_or_upgrade 'redis'
 brew_launchctl_restart 'redis'
 brew_install_or_upgrade 'the_silver_searcher'
-brew_install_or_upgrade 'vim'
+brew_install_or_upgrade 'macvim'
 brew_install_or_upgrade 'ctags'
 brew_install_or_upgrade 'tmux'
 brew_install_or_upgrade 'reattach-to-user-namespace'
@@ -147,11 +161,8 @@ brew_install_or_upgrade 'qt'
 brew_install_or_upgrade 'hub'
 brew_install_or_upgrade 'node'
 
-brew_install_or_upgrade 'rbenv'
-brew_install_or_upgrade 'ruby-build'
-
 # shellcheck disable=SC2016
-append_to_zshrc 'eval "$(rbenv init - --no-rehash zsh)"' 1
+# append_to_zshrc 'eval "$(rbenv init - --no-rehash zsh)"' 1
 
 brew_install_or_upgrade 'openssl'
 brew unlink openssl && brew link openssl --force
@@ -159,14 +170,14 @@ brew_install_or_upgrade 'libyaml'
 
 ruby_version="$(curl -sSL http://ruby.thoughtbot.com/latest)"
 
-eval "$(rbenv init - zsh)"
+# eval "$(rbenv init - zsh)"
 
-if ! rbenv versions | grep -Fq "$ruby_version"; then
-  rbenv install -s "$ruby_version"
-fi
+# if ! rbenv versions | grep -Fq "$ruby_version"; then
+#   rbenv install -s "$ruby_version"
+# fi
 
-rbenv global "$ruby_version"
-rbenv shell "$ruby_version"
+# rbenv global "$ruby_version"
+# rbenv shell "$ruby_version"
 
 gem update --system
 
@@ -182,6 +193,48 @@ if ! command -v rcup >/dev/null; then
   brew_tap 'thoughtbot/formulae'
   brew_install_or_upgrade 'rcm'
 fi
+
+brew_cask_install_or_upgrade 'google-chrome'
+brew_cask_install_or_upgrade 'slack'
+brew_cask_install_or_upgrade '1password'
+brew_cask_install_or_upgrade 'screenhero'
+brew_cask_install_or_upgrade 'google-drive'
+brew_cask_install_or_upgrade 'dropbox'
+brew_cask_install_or_upgrade 'iterm2'
+brew_cask_install_or_upgrade 'android-studio'
+brew_cask_install_or_upgrade 'firefox'
+brew_cask_install_or_upgrade 'virtualbox'
+brew_cask_install_or_upgrade 'virtualbox-extension-pack'
+brew_cask_install_or_upgrade 'genymotion'
+brew_cask_install_or_upgrade 'harvest'
+brew_cask_install_or_upgrade 'kindle'
+
+brew_install_or_upgrade 'awscli'
+brew_install_or_upgrade 'imagemagick'
+brew_install_or_upgrade 'phantomjs'
+brew_install_or_upgrade 'wget'
+
+brew_install_or_upgrade 'ansible'
+brew_install_or_upgrade 'docker'
+brew_install_or_upgrade 'boot2docker'
+brew_install_or_upgrade 'docker-machine'
+
+brew_install_or_upgrade 'erlang'
+brew_install_or_upgrade 'elixir'
+
+brew_install_or_upgrade 'mysql'
+brew_launchctl_restart 'mysql'
+brew_install_or_upgrade 'influxdb'
+brew_launchctl_restart 'influxdb'
+
+brew_install_or_upgrade 'chruby'
+brew_install_or_upgrade 'ruby-install'
+
+brew_install_or_upgrade 'cowsay'
+brew_install_or_upgrade 'figlet'
+brew_install_or_upgrade 'fortune'
+
+append_to_zshrc "alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'"
 
 if [ -f "$HOME/.laptop.local" ]; then
   . "$HOME/.laptop.local"
