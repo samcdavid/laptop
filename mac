@@ -123,7 +123,6 @@ gem_install_or_update() {
   else
     fancy_echo "Installing %s ..." "$1"
     gem install "$@"
-    # rbenv rehash
   fi
 }
 
@@ -144,6 +143,10 @@ fi
 
 fancy_echo "Updating Homebrew formulas ..."
 brew update
+
+brew_install_or_upgrade 'chruby'
+brew_install_or_upgrade 'ruby-install'
+append_to_zshrc 'source /usr/local/opt/chruby/share/chruby/chruby.sh'
 
 brew_install_or_upgrade 'zsh'
 brew_install_or_upgrade 'git'
@@ -179,6 +182,11 @@ ruby_version="$(curl -sSL http://ruby.thoughtbot.com/latest)"
 # rbenv global "$ruby_version"
 # rbenv shell "$ruby_version"
 
+fancy_echo "$ruby_version"
+ruby-install "$ruby_version"
+source /usr/local/share/chruby/chruby.sh
+chruby "$ruby_version"
+
 gem update --system
 
 gem_install_or_update 'bundler'
@@ -194,24 +202,20 @@ if ! command -v rcup >/dev/null; then
   brew_install_or_upgrade 'rcm'
 fi
 
-brew_cask_install_or_upgrade 'google-chrome'
-brew_cask_install_or_upgrade 'slack'
-brew_cask_install_or_upgrade '1password'
-brew_cask_install_or_upgrade 'screenhero'
-brew_cask_install_or_upgrade 'google-drive'
-brew_cask_install_or_upgrade 'dropbox'
-brew_cask_install_or_upgrade 'iterm2'
-brew_cask_install_or_upgrade 'android-studio'
-brew_cask_install_or_upgrade 'firefox'
-brew_cask_install_or_upgrade 'virtualbox'
-brew_cask_install_or_upgrade 'virtualbox-extension-pack'
-brew_cask_install_or_upgrade 'genymotion'
-brew_cask_install_or_upgrade 'harvest'
-brew_cask_install_or_upgrade 'kindle'
+brew cask install screenhero
+brew cask install google-drive
+brew cask install dropbox
+brew cask install iterm2
+brew cask install android-studio
+brew cask install firefox
+brew cask install virtualbox
+brew cask install virtualbox-extension-pack
+brew cask install genymotion
+brew cask install kindle
 
 brew_install_or_upgrade 'awscli'
+append_to_zshrc 'source /usr/local/share/zsh/site-functions/_aws'
 brew_install_or_upgrade 'imagemagick'
-brew_install_or_upgrade 'phantomjs'
 brew_install_or_upgrade 'wget'
 
 brew_install_or_upgrade 'ansible'
@@ -226,9 +230,6 @@ brew_install_or_upgrade 'mysql'
 brew_launchctl_restart 'mysql'
 brew_install_or_upgrade 'influxdb'
 brew_launchctl_restart 'influxdb'
-
-brew_install_or_upgrade 'chruby'
-brew_install_or_upgrade 'ruby-install'
 
 brew_install_or_upgrade 'cowsay'
 brew_install_or_upgrade 'figlet'
