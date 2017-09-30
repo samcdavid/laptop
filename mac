@@ -130,6 +130,7 @@ tap "thoughtbot/formulae"
 tap "homebrew/services"
 tap "universal-ctags/universal-ctags"
 tap "caskroom/cask"
+tap "caskroom/fonts"
 
 # Unix
 brew "universal-ctags", args: ["HEAD"]
@@ -186,8 +187,8 @@ brew "youtube-dl"
 cask "1password"
 cask "dropbox"
 cask "firefox"
-cask "google-chrome"
 cask "font-hack"
+cask "google-chrome"
 cask "keepingyouawake"
 cask "postman"
 cask "screenhero"
@@ -213,14 +214,6 @@ fi
 
 install_asdf_plugin() {
   local name="$1"
-
-  if ! asdf plugin-list | grep -Fq "$name"; then
-    asdf plugin-add "$name"
-  fi
-}
-
-install_asdf_plugin_from_url() {
-  local name="$1"
   local url="$2"
 
   if ! asdf plugin-list | grep -Fq "$name"; then
@@ -230,12 +223,12 @@ install_asdf_plugin_from_url() {
 
 # shellcheck disable=SC1090
 source "$HOME/.asdf/asdf.sh"
-install_asdf_plugin "ruby"
-install_asdf_plugin "nodejs"
-install_asdf_plugin "erlang"
-install_asdf_plugin "elixir"
-install_asdf_plugin "elm"
-install_asdf_plugin "postgres"
+install_asdf_plugin "ruby" "https://github.com/asdf-vm/asdf-ruby"
+install_asdf_plugin "nodejs" "https://github.com/asdf-vm/asdf-nodejs"
+install_asdf_plugin "erlang" "https://github.com/asdf-vm/asdf-erlang"
+install_asdf_plugin "elixir" "https://github.com/asdf-vm/asdf-elixir"
+install_asdf_plugin "elm" "https://github.com/vic/asdf-elm"
+install_asdf_plugin "postgres" "https://github.com/smashedtoatoms/asdf-postgres"
 
 install_asdf_language() {
   local language="$1"
@@ -272,11 +265,11 @@ fi
 
 # Setup Pathogen
 if [ ! -d "$HOME/.vim/autoload" ]; then
-  mkdir "$HOME/.vim"
+  mkdir "$HOME/.vim/autoload"
 fi
 
 if [ ! -d "$HOME/.vim/bundle" ]; then
-  mkdir "$HOME/.vim"
+  mkdir "$HOME/.vim/bundle"
 fi
 
 curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
