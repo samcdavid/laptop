@@ -170,6 +170,7 @@ brew "awscli"
 brew "cmake"
 brew "cowsay"
 brew "direnv"
+brew "fasd"
 brew "ffmpeg"
 brew "figlet"
 brew "fortune"
@@ -178,6 +179,7 @@ brew "libtool"
 brew "libxslt"
 brew "macvim"
 brew "readline"
+brew "thefuck"
 brew "tree"
 brew "unixodbc"
 brew "wget"
@@ -189,6 +191,7 @@ cask "dropbox"
 cask "firefox"
 cask "font-hack"
 cask "google-chrome"
+cask "iterm2"
 cask "keepingyouawake"
 cask "postman"
 cask "screenhero"
@@ -277,7 +280,6 @@ curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
 # Download Manual Files
 wget https://download.docker.com/mac/stable/Docker.dmg
 wget http://magicprefs.com/MagicPrefs.app.zip
-wget https://iterm2.com/downloads/stable/latest
 
 # Install ohmyzsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
