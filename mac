@@ -194,7 +194,6 @@ cask "google-chrome"
 cask "iterm2"
 cask "keepingyouawake"
 cask "postman"
-cask "screenhero"
 cask "slack"
 cask "spotify"
 EOF
