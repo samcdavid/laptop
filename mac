@@ -163,6 +163,9 @@ brew "coreutils"
 brew "yarn"
 cask "gpgtools"
 
+# Databases
+brew "postgres"
+
 # Custom
 brew "autoconf"
 brew "automake"
