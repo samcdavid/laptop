@@ -194,6 +194,7 @@ brew "youtube-dl"
 
 cask "1password"
 cask "atom"
+cask "authy"
 cask "dropbox"
 cask "firefox"
 cask "font-hack"
