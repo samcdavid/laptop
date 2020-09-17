@@ -195,8 +195,6 @@ brew "wxmac"
 brew "youtube-dl"
 
 cask "1password"
-cask "atom"
-cask "authy"
 cask "dropbox"
 cask "firefox"
 cask "firefox-developer-edition"
@@ -216,6 +214,7 @@ cask "ngrok"
 cask "sequel-pro"
 cask "slack"
 cask "spotify"
+cask "visual-studio-code"
 EOF
 
 if brew list | grep --silent "qt@5.5"; then
