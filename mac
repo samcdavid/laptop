@@ -8,8 +8,6 @@
 # ============
 # * Update keys in github
 # * Update gpg signing key and auto signing
-# * Clone dotfiles and setup with `rcup ~/.dotfiles`
-# * Setup LazyVim (https://www.lazyvim.org/installation)
 # * Setup 1password
 
 fancy_echo() {
@@ -17,23 +15,6 @@ fancy_echo() {
 
   # shellcheck disable=SC2059
   printf "\n$fmt\n" "$@"
-}
-
-append_to_fish_config() {
-  local text="$1"
-  local fish_config="$HOME/.config/fish/config.fish"
-
-  if [ ! -d "$HOME/.config/fish" ]; then
-    mkdir -p "$HOME/.config/fish"
-  fi
-
-  if [ ! -f "$fish_config" ]; then
-    touch "$fish_config"
-  fi
-
-  if ! grep -Fqs "$text" "$fish_config"; then
-    printf "\n%s\n" "$text" >> "$fish_config"
-  fi
 }
 
 if [ ! -d "$HOME/.bin/" ]; then
@@ -170,6 +151,14 @@ fi
 # From here on, abort on errors — these steps depend on each other
 set -e
 
+# Clone dotfiles and create symlinks
+if [ ! -d "$HOME/.dotfiles" ]; then
+  fancy_echo "Cloning dotfiles..."
+  git clone https://github.com/samcdavid/dotfiles.git "$HOME/.dotfiles"
+fi
+fancy_echo "Setting up dotfiles symlinks..."
+rcup -f
+
 # Set fish as default shell
 update_shell() {
   local shell_path;
@@ -192,13 +181,8 @@ case "$SHELL" in
     ;;
 esac
 
-# shellcheck disable=SC2016
-append_to_fish_config 'fish_add_path $HOME/.bin'
-
 # Configure asdf version manager (installed via Homebrew)
 fancy_echo "Configuring asdf version manager..."
-# shellcheck disable=SC2016
-append_to_fish_config 'source (brew --prefix asdf)/libexec/asdf.fish'
 
 install_asdf_plugin() {
   local name="$1"

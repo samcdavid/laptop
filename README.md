@@ -33,6 +33,11 @@ sh mac 2>&1 | tee ~/laptop.log
 
 1password, Altair GraphQL Client, Chromedriver, Claude, Docker Desktop, Font Hack, Font JetBrains Mono, Font JetBrains Mono Nerd Font, Font Menlo for Powerline, Font SF Mono for Powerline, gcloud CLI, Ghostty, GPG Suite, Insomnia, Linear, Loom, MacDown, Muzzle, ngrok, Notion, ProtonVPN, Rectangle, Session Manager Plugin, Tuple, Visual Studio Code
 
+**Dotfiles ([samcdavid/dotfiles](https://github.com/samcdavid/dotfiles)):**
+
+- Clones dotfiles repo and runs `rcup` to create symlinks
+- Includes fish config, neovim (LazyVim), tmux, ghostty, git, psqlrc, tmuxinator sessions
+
 **Shell:**
 
 - Sets [fish](https://fishshell.com/) as the default shell
@@ -53,8 +58,6 @@ After running the script:
 
 - Update keys in GitHub
 - Update GPG signing key and auto signing
-- Clone dotfiles and setup with `rcup ~/.dotfiles`
-- Setup [LazyVim](https://www.lazyvim.org/installation)
 - Setup 1Password
 
 ## Credits
