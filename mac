@@ -8,8 +8,8 @@
 # ============
 # * Update keys in github
 # * Update gpg signing key and auto signing
-# * Setup dotfiles with `rcup ~/.dotfiles`
-# * Install Vim plugins
+# * Clone dotfiles and setup with `rcup ~/.dotfiles`
+# * Setup LazyVim (https://www.lazyvim.org/installation)
 # * Setup 1password
 
 fancy_echo() {
@@ -76,12 +76,9 @@ brew "git"
 brew "git-lfs"
 brew "openssl@3"
 brew "rcm"
-brew "reattach-to-user-namespace"
-brew "the_silver_searcher"
 brew "tmux"
 brew "tmuxinator"
 brew "tpm"
-brew "vim"
 brew "watchman"
 brew "zsh"
 brew "fish"
@@ -128,7 +125,7 @@ brew "unixodbc"
 brew "websocat"
 brew "wget"
 brew "wxwidgets"
-brew "youtube-dl"
+brew "yt-dlp"
 brew "brimdata/tap/zq"
 
 # Fun
@@ -150,7 +147,6 @@ cask "font-menlo-for-powerline"
 cask "font-sf-mono-for-powerline"
 cask "gcloud-cli"
 cask "ghostty"
-cask "google-cloud-sdk"
 cask "gpg-suite"
 cask "insomnia"
 cask "linear-linear"

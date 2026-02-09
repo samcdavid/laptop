@@ -20,18 +20,18 @@ sh mac 2>&1 | tee ~/laptop.log
 
 | Category | Packages |
 |---|---|
-| Unix | git, git-lfs, openssl@3, rcm, reattach-to-user-namespace, the_silver_searcher, tmux, tmuxinator, tpm, vim, watchman, zsh, fish |
+| Unix | git, git-lfs, openssl@3, rcm, tmux, tmuxinator, tpm, watchman, zsh, fish |
 | GitHub | gh |
 | Image processing | imagemagick, vips |
 | Languages / package managers | asdf, yarn |
 | Databases | postgresql@17, redis |
 | Cloud / infrastructure | awscli, circleci, nomad |
-| Dev tools | chroma, cmake, colordiff, direnv, ffmpeg@6, fswatch, fzf, jq, libxslt, llvm@11, miller, mkcert, neovim, pipx, ripgrep, tree, unixodbc, websocat, wget, wxwidgets, youtube-dl, zq |
+| Dev tools | chroma, cmake, colordiff, direnv, ffmpeg@6, fswatch, fzf, jq, libxslt, llvm@11, miller, mkcert, neovim, pipx, ripgrep, tree, unixodbc, websocat, wget, wxwidgets, yt-dlp, zq |
 | Fun | cowsay, figlet, fortune, lolcat |
 
 **Homebrew** casks:
 
-1password, Altair GraphQL Client, Chromedriver, Claude, Docker Desktop, Font Hack, Font JetBrains Mono, Font JetBrains Mono Nerd Font, Font Menlo for Powerline, Font SF Mono for Powerline, gcloud CLI, Ghostty, Google Cloud SDK, GPG Suite, Insomnia, Linear, Loom, MacDown, Muzzle, ngrok, Notion, ProtonVPN, Rectangle, Session Manager Plugin, Tuple, Visual Studio Code
+1password, Altair GraphQL Client, Chromedriver, Claude, Docker Desktop, Font Hack, Font JetBrains Mono, Font JetBrains Mono Nerd Font, Font Menlo for Powerline, Font SF Mono for Powerline, gcloud CLI, Ghostty, GPG Suite, Insomnia, Linear, Loom, MacDown, Muzzle, ngrok, Notion, ProtonVPN, Rectangle, Session Manager Plugin, Tuple, Visual Studio Code
 
 **Shell:**
 
@@ -53,8 +53,8 @@ After running the script:
 
 - Update keys in GitHub
 - Update GPG signing key and auto signing
-- Setup dotfiles with `rcup ~/.dotfiles`
-- Install Vim plugins
+- Clone dotfiles and setup with `rcup ~/.dotfiles`
+- Setup [LazyVim](https://www.lazyvim.org/installation)
 - Setup 1Password
 
 ## Credits
