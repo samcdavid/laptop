@@ -46,7 +46,7 @@ brew update --force
 # Allow brew bundle to report failures without aborting the script.
 # Individual formula/cask failures are logged but won't prevent the
 # rest of the setup from completing.
-brew bundle --no-lock --file=- <<EOF
+brew bundle --file=- <<EOF
 tap "homebrew/services"
 tap "brimdata/tap"
 
