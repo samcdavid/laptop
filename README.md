@@ -1,14 +1,10 @@
-Laptop
-======
+# Laptop
 
-Laptop is a script to set up an OS X laptop for web development.
+Script to set up a macOS laptop for development.
 
-It can be run multiple times on the same machine safely.
-It installs, upgrades, or skips packages
-based on what is already installed on the machine.
+It can be run multiple times on the same machine safely. It installs, upgrades, or skips packages based on what is already installed. If individual formulae or casks fail, the script logs a warning and continues with the rest of the setup.
 
-Install
--------
+## Install
 
 Download, review, then execute the script:
 
@@ -18,35 +14,49 @@ less mac
 sh mac 2>&1 | tee ~/laptop.log
 ```
 
-OS X El Capitan (10.11)
------------------------
+## What it sets up
 
-You may have problems installing Homebrew for the first time on OS X El
-Capitan due to permission changes to the /usr directory (within which the Homebrew
-installation is typically located). See the [Homebrew El Capitan troubleshooting instructions](https://github.com/Homebrew/homebrew/blob/master/share/doc/homebrew/El_Capitan_and_Homebrew.md)
-for steps to resolve the permissions issues that interfere with Homebrew's
-installation.
+**Homebrew** formulae:
 
-License
--------
+| Category | Packages |
+|---|---|
+| Unix | git, git-lfs, openssl@3, rcm, reattach-to-user-namespace, the_silver_searcher, tmux, tmuxinator, tpm, vim, watchman, zsh, fish |
+| GitHub | gh |
+| Image processing | imagemagick, vips |
+| Languages / package managers | asdf, yarn |
+| Databases | postgresql@17, redis |
+| Cloud / infrastructure | awscli, circleci, nomad |
+| Dev tools | chroma, cmake, colordiff, direnv, ffmpeg@6, fswatch, fzf, jq, libxslt, llvm@11, miller, mkcert, neovim, pipx, ripgrep, tree, unixodbc, websocat, wget, wxwidgets, youtube-dl, zq |
+| Fun | cowsay, figlet, fortune, lolcat |
 
-Laptop is © 2011-2015 thoughtbot, inc.
-It is free software,
-and may be redistributed under the terms specified in the [LICENSE] file.
+**Homebrew** casks:
 
-[LICENSE]: LICENSE
+1password, Altair GraphQL Client, Chromedriver, Claude, Docker Desktop, Font Hack, Font JetBrains Mono, Font JetBrains Mono Nerd Font, Font Menlo for Powerline, Font SF Mono for Powerline, gcloud CLI, Ghostty, Google Cloud SDK, GPG Suite, Insomnia, Linear, Loom, MacDown, Muzzle, ngrok, Notion, ProtonVPN, Rectangle, Session Manager Plugin, Tuple, Visual Studio Code
 
-Credit - About thoughtbot
--------------------------
+**Shell:**
 
-![thoughtbot](https://thoughtbot.com/logo.png)
+- Sets [fish](https://fishshell.com/) as the default shell
+- Installs [Oh My Fish](https://github.com/oh-my-fish/oh-my-fish)
 
-Laptop is maintained and funded by thoughtbot, inc.
-The names and logos for thoughtbot are trademarks of thoughtbot, inc.
+**Version management ([asdf](https://asdf-vm.com/)):**
 
-We are passionate about open source software.
-See [our other projects][community].
-We are [available for hire][hire].
+- Plugins: ruby, nodejs, erlang, elixir, python, golang, terraform
+- Installs latest Node.js
 
-[community]: https://thoughtbot.com/community?utm_source=github
-[hire]: https://thoughtbot.com?utm_source=github
+## Customize
+
+The script will source `~/.laptop.local` if it exists. Put any additional setup there.
+
+## Manual steps
+
+After running the script:
+
+- Update keys in GitHub
+- Update GPG signing key and auto signing
+- Setup dotfiles with `rcup ~/.dotfiles`
+- Install Vim plugins
+- Setup 1Password
+
+## Credits
+
+Originally based on [thoughtbot's laptop](https://github.com/thoughtbot/laptop) script. See the [LICENSE](LICENSE) file for details.

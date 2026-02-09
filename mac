@@ -1,15 +1,8 @@
 #!/bin/sh
 
-# Welcome to the thoughtbot laptop script!
+# Laptop setup script
 # Be prepared to turn your laptop (or desktop, no haters here)
 # into an awesome development machine.
-
-# Manual Installs
-# ===============
-# * Docker for Mac
-# * Google Drive
-# * iTerm
-# * MagicPrefs
 
 # Manual Steps
 # ============
@@ -18,7 +11,6 @@
 # * Setup dotfiles with `rcup ~/.dotfiles`
 # * Install Vim plugins
 # * Setup 1password
-# * Setup Chrome Instances
 
 fancy_echo() {
   local fmt="$1"; shift
@@ -27,258 +19,225 @@ fancy_echo() {
   printf "\n$fmt\n" "$@"
 }
 
-append_to_zshrc() {
-  local text="$1" zshrc
-  local skip_new_line="${2:-0}"
+append_to_fish_config() {
+  local text="$1"
+  local fish_config="$HOME/.config/fish/config.fish"
 
-  if [ -w "$HOME/.zshrc.local" ]; then
-    zshrc="$HOME/.zshrc.local"
-  else
-    zshrc="$HOME/.zshrc"
+  if [ ! -d "$HOME/.config/fish" ]; then
+    mkdir -p "$HOME/.config/fish"
   fi
 
-  if ! grep -Fqs "$text" "$zshrc"; then
-    if [ "$skip_new_line" -eq 1 ]; then
-      printf "%s\n" "$text" >> "$zshrc"
-    else
-      printf "\n%s\n" "$text" >> "$zshrc"
-    fi
+  if [ ! -f "$fish_config" ]; then
+    touch "$fish_config"
+  fi
+
+  if ! grep -Fqs "$text" "$fish_config"; then
+    printf "\n%s\n" "$text" >> "$fish_config"
   fi
 }
-
-# shellcheck disable=SC2154
-trap 'ret=$?; test $ret -ne 0 && printf "failed\n\n" >&2; exit $ret' EXIT
-
-set -e
 
 if [ ! -d "$HOME/.bin/" ]; then
   mkdir "$HOME/.bin"
 fi
 
-if [ ! -f "$HOME/.zshrc" ]; then
-  touch "$HOME/.zshrc"
-fi
-
-# shellcheck disable=SC2016
-append_to_zshrc 'export PATH="$HOME/.bin:$PATH"'
-
-HOMEBREW_PREFIX="/usr/local"
-
-if [ -d "$HOMEBREW_PREFIX" ]; then
-  if ! [ -r "$HOMEBREW_PREFIX" ]; then
-    sudo chown -R "$LOGNAME:admin" /usr/local
-  fi
+# Determine Homebrew prefix based on architecture
+ARCH="$(uname -m)"
+if [ "$ARCH" = "arm64" ]; then
+  HOMEBREW_PREFIX="/opt/homebrew"
 else
-  sudo mkdir "$HOMEBREW_PREFIX"
-  sudo chflags norestricted "$HOMEBREW_PREFIX"
-  sudo chown -R "$LOGNAME:admin" "$HOMEBREW_PREFIX"
+  HOMEBREW_PREFIX="/usr/local"
 fi
 
+if ! command -v brew >/dev/null; then
+  fancy_echo "Installing Homebrew ..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  if [ $? -ne 0 ]; then
+    printf "Homebrew installation failed. Exiting.\n" >&2
+    exit 1
+  fi
+
+  # Add Homebrew to PATH for this session
+  eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
+fi
+
+fancy_echo "Updating Homebrew formulae ..."
+brew update --force
+
+# Allow brew bundle to report failures without aborting the script.
+# Individual formula/cask failures are logged but won't prevent the
+# rest of the setup from completing.
+brew bundle --no-lock --file=- <<EOF
+tap "homebrew/services"
+tap "brimdata/tap"
+
+# Unix
+brew "git"
+brew "git-lfs"
+brew "openssl@3"
+brew "rcm"
+brew "reattach-to-user-namespace"
+brew "the_silver_searcher"
+brew "tmux"
+brew "tmuxinator"
+brew "tpm"
+brew "vim"
+brew "watchman"
+brew "zsh"
+brew "fish"
+
+# GitHub
+brew "gh"
+
+# Image manipulation / processing
+brew "imagemagick"
+brew "vips"
+
+# Programming language prerequisites and package managers
+brew "asdf"
+brew "yarn"
+
+# Databases
+brew "postgresql@17"
+brew "redis"
+
+# Cloud / infrastructure
+brew "awscli"
+brew "circleci"
+brew "nomad"
+
+# Dev tools
+brew "chroma"
+brew "cmake"
+brew "cmake-docs"
+brew "colordiff"
+brew "direnv"
+brew "ffmpeg@6"
+brew "fswatch"
+brew "fzf"
+brew "jq"
+brew "libxslt"
+brew "llvm@11"
+brew "miller"
+brew "mkcert"
+brew "neovim"
+brew "pipx"
+brew "ripgrep"
+brew "tree"
+brew "unixodbc"
+brew "websocat"
+brew "wget"
+brew "wxwidgets"
+brew "youtube-dl"
+brew "brimdata/tap/zq"
+
+# Fun
+brew "cowsay"
+brew "figlet"
+brew "fortune"
+brew "lolcat"
+
+# Casks
+cask "1password"
+cask "altair-graphql-client"
+cask "chromedriver"
+cask "claude"
+cask "docker-desktop"
+cask "font-hack"
+cask "font-jetbrains-mono"
+cask "font-jetbrains-mono-nerd-font"
+cask "font-menlo-for-powerline"
+cask "font-sf-mono-for-powerline"
+cask "gcloud-cli"
+cask "ghostty"
+cask "google-cloud-sdk"
+cask "gpg-suite"
+cask "insomnia"
+cask "linear-linear"
+cask "loom"
+cask "macdown"
+cask "muzzle"
+cask "ngrok"
+cask "notion"
+cask "protonvpn"
+cask "rectangle"
+cask "session-manager-plugin"
+cask "tuple"
+cask "visual-studio-code"
+EOF
+
+if [ $? -ne 0 ]; then
+  fancy_echo "Warning: Some formulae or casks failed to install. Check the output above."
+  fancy_echo "Continuing with the rest of the setup..."
+fi
+
+# From here on, abort on errors — these steps depend on each other
+set -e
+
+# Set fish as default shell
 update_shell() {
   local shell_path;
-  shell_path="$(which zsh)"
+  shell_path="$(which fish)"
 
-  fancy_echo "Changing your shell to zsh ..."
+  fancy_echo "Changing your shell to fish ..."
   if ! grep "$shell_path" /etc/shells > /dev/null 2>&1 ; then
     fancy_echo "Adding '$shell_path' to /etc/shells"
     sudo sh -c "echo $shell_path >> /etc/shells"
   fi
-  sudo chsh -s "$shell_path" "$USER"
+  chsh -s "$shell_path"
 }
 
 case "$SHELL" in
-  */zsh)
-    if [ "$(which zsh)" != '/usr/local/bin/zsh' ] ; then
-      update_shell
-    fi
+  */fish)
+    fancy_echo "Already using fish shell."
     ;;
   *)
     update_shell
     ;;
 esac
 
-gem_install_or_update() {
-  if gem list "$1" --installed > /dev/null; then
-    gem update "$@"
-  else
-    gem install "$@"
-  fi
-}
+# shellcheck disable=SC2016
+append_to_fish_config 'fish_add_path $HOME/.bin'
 
-if ! command -v brew >/dev/null; then
-  fancy_echo "Installing Homebrew ..."
-    curl -fsS \
-      'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
-
-    append_to_zshrc '# recommended by brew doctor'
-
-    # shellcheck disable=SC2016
-    append_to_zshrc 'export PATH="/usr/local/bin:$PATH"' 1
-
-    export PATH="/usr/local/bin:$PATH"
-fi
-
-if brew list | grep -Fq brew-cask; then
-  fancy_echo "Uninstalling old Homebrew-Cask ..."
-  brew uninstall --force brew-cask
-fi
-
-fancy_echo "Updating Homebrew formulae ..."
-brew update --force # https://github.com/Homebrew/brew/issues/1151
-brew bundle --file=- <<EOF
-tap "thoughtbot/formulae"
-tap "homebrew/services"
-tap "universal-ctags/universal-ctags"
-tap "caskroom/cask"
-tap "caskroom/fonts"
-
-# Unix
-brew "universal-ctags", args: ["HEAD"]
-brew "git"
-brew "openssl"
-brew "rcm"
-brew "reattach-to-user-namespace"
-brew "the_silver_searcher"
-brew "tmux"
-brew "vim"
-brew "watchman"
-brew "zsh"
-
-# Heroku
-brew "heroku"
-brew "parity"
-
-# GitHub
-brew "hub"
-
-# Image manipulation
-brew "imagemagick"
-
-# Testing
-brew "qt@5.5" if MacOS::Xcode.installed?
-
-# Programming language prerequisites and package managers
-brew "libyaml" # should come after openssl
-brew "coreutils"
-brew "yarn"
-cask "gpgtools"
-
-# Databases
-# brew "postgres"
-
-# Custom
-brew "autoconf"
-brew "automake"
-brew "awscli"
-brew "circleci"
-brew "cmake"
-brew "colordiff"
-brew "cowsay"
-brew "direnv"
-brew "fasd"
-brew "ffmpeg"
-brew "figlet"
-brew "fortune"
-brew "fwup"
-brew "fzf"
-brew "gpg-agent"
-brew "libtool"
-brew "libxslt"
-brew "lolcat"
-brew "neovim"
-brew "readline"
-brew "rg"
-brew "tree"
-brew "unixodbc"
-brew "wget"
-brew "wxmac"
-brew "youtube-dl"
-
-cask "1password"
-cask "dropbox"
-cask "firefox"
-cask "firefox-developer-edition"
-cask "font-hack"
-cask "google-chrome"
-cask "google-cloud-sdk"
-cask "gpg-suite"
-cask "grammarly"
-cask "insomnia"
-cask "iterm2"
-cask "keepingyouawake"
-cask "keybase"
-cask "krisp"
-cask "macdown"
-cask "muzzle"
-cask "ngrok"
-cask "sequel-pro"
-cask "slack"
-cask "spotify"
-cask "visual-studio-code"
-EOF
-
-if brew list | grep --silent "qt@5.5"; then
-  fancy_echo "Symlink qmake binary to /usr/local/bin for Capybara Webkit..."
-  brew unlink qt@5.5
-  brew link --force qt@5.5
-fi
-
-fancy_echo "Update heroku binary..."
-brew unlink heroku
-brew link --force heroku
-
+# Configure asdf version manager (installed via Homebrew)
 fancy_echo "Configuring asdf version manager..."
-if [ ! -d "$HOME/.asdf" ]; then
-  git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.3.0
-  append_to_zshrc "source $HOME/.asdf/asdf.sh" 1
-fi
+# shellcheck disable=SC2016
+append_to_fish_config 'source (brew --prefix asdf)/libexec/asdf.fish'
 
 install_asdf_plugin() {
   local name="$1"
   local url="$2"
 
-  if ! asdf plugin-list | grep -Fq "$name"; then
-    asdf plugin-add "$name" "$url"
+  if ! asdf plugin list 2>/dev/null | grep -Fq "$name"; then
+    asdf plugin add "$name" "$url"
   fi
 }
 
-# shellcheck disable=SC1090
-source "$HOME/.asdf/asdf.sh"
+# Source asdf for this session
+# shellcheck disable=SC1091
+. "$(brew --prefix asdf)/libexec/asdf.sh"
+
 install_asdf_plugin "ruby" "https://github.com/asdf-vm/asdf-ruby"
 install_asdf_plugin "nodejs" "https://github.com/asdf-vm/asdf-nodejs"
 install_asdf_plugin "erlang" "https://github.com/asdf-vm/asdf-erlang"
 install_asdf_plugin "elixir" "https://github.com/asdf-vm/asdf-elixir"
-install_asdf_plugin "python" "https://github.com/tuvistavie/asdf-python"
-install_asdf_plugin "elm" "https://github.com/vic/asdf-elm"
-install_asdf_plugin "postgres" "https://github.com/smashedtoatoms/asdf-postgres"
+install_asdf_plugin "python" "https://github.com/asdf-vm/asdf-python"
+install_asdf_plugin "golang" "https://github.com/asdf-vm/asdf-golang"
+install_asdf_plugin "terraform" "https://github.com/asdf-community/asdf-hashicorp"
 
 install_asdf_language() {
   local language="$1"
   local version
-  version="$(asdf list-all "$language" | tail -1)"
+  version="$(asdf list all "$language" | grep -v '[a-zA-Z]' | tail -1)"
 
-  if ! asdf list "$language" | grep -Fq "$version"; then
+  if ! asdf list "$language" 2>/dev/null | grep -Fq "$version"; then
     asdf install "$language" "$version"
     asdf global "$language" "$version"
   fi
 }
 
-fancy_echo "Installing latest Ruby..."
-#install_asdf_language "ruby"
-gem update --system
-gem_install_or_update "bundler"
-gem_install_or_update "lolcat"
-number_of_cores=$(sysctl -n hw.ncpu)
-bundle config --global jobs $((number_of_cores - 1))
-
 fancy_echo "Installing latest Node..."
-bash "$HOME/.asdf/plugins/nodejs/bin/import-release-team-keyring"
 install_asdf_language "nodejs"
-#install_asdf_language "erlang"
-#install_asdf_language "elixir"
-#install_asdf_language "python"
-#install_asdf_language "elm"
-#install_asdf_language "postgres"
 
 if [ -f "$HOME/.laptop.local" ]; then
   fancy_echo "Running your customizations from ~/.laptop.local ..."
@@ -286,22 +245,10 @@ if [ -f "$HOME/.laptop.local" ]; then
   . "$HOME/.laptop.local"
 fi
 
-# Setup Pathogen
-if [ ! -d "$HOME/.vim/autoload" ]; then
-  mkdir "$HOME/.vim/autoload"
+# Install Oh My Fish
+if [ ! -d "$HOME/.local/share/omf" ]; then
+  fancy_echo "Installing Oh My Fish..."
+  curl -L https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install > /tmp/omf-install
+  fish /tmp/omf-install --noninteractive
+  rm /tmp/omf-install
 fi
-
-if [ ! -d "$HOME/.vim/bundle" ]; then
-  mkdir "$HOME/.vim/bundle"
-fi
-
-curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
-
-# Download Manual Files
-wget https://download.docker.com/mac/stable/Docker.dmg
-wget http://magicprefs.com/MagicPrefs.app.zip
-
-# Install ohmyzsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
