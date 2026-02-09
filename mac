@@ -47,7 +47,6 @@ brew update --force
 # Individual formula/cask failures are logged but won't prevent the
 # rest of the setup from completing.
 brew bundle --file=- <<EOF
-tap "homebrew/services"
 tap "brimdata/tap"
 
 # Unix
@@ -93,7 +92,7 @@ brew "fswatch"
 brew "fzf"
 brew "jq"
 brew "libxslt"
-brew "llvm@11"
+brew "llvm"
 brew "miller"
 brew "mkcert"
 brew "neovim"
