@@ -149,6 +149,9 @@ fi
 # From here on, abort on errors — these steps depend on each other
 set -e
 
+# Set up git-lfs hooks
+git lfs install
+
 # Clone dotfiles and create symlinks
 if [ ! -d "$HOME/.dotfiles" ]; then
   fancy_echo "Cloning dotfiles..."
@@ -203,19 +206,8 @@ install_asdf_plugin "python" "https://github.com/asdf-vm/asdf-python"
 install_asdf_plugin "golang" "https://github.com/asdf-vm/asdf-golang"
 install_asdf_plugin "terraform" "https://github.com/asdf-community/asdf-hashicorp"
 
-install_asdf_language() {
-  local language="$1"
-  local version
-  version="$(asdf list all "$language" | grep -v '[a-zA-Z]' | tail -1)"
-
-  if ! asdf list "$language" 2>/dev/null | grep -Fq "$version"; then
-    asdf install "$language" "$version"
-    asdf global "$language" "$version"
-  fi
-}
-
-fancy_echo "Installing latest Node..."
-install_asdf_language "nodejs"
+fancy_echo "Installing languages from ~/.tool-versions..."
+(cd "$HOME" && asdf install)
 
 if [ -f "$HOME/.laptop.local" ]; then
   fancy_echo "Running your customizations from ~/.laptop.local ..."
@@ -230,6 +222,14 @@ if [ ! -d "$HOME/.local/share/omf" ]; then
   fish /tmp/omf-install --noninteractive
   rm /tmp/omf-install
 fi
+
+# Install Oh My Fish packages from bundle
+fancy_echo "Installing Oh My Fish packages..."
+fish -c "omf install"
+
+# Install tmux plugins via TPM
+fancy_echo "Installing tmux plugins..."
+"$HOMEBREW_PREFIX/opt/tpm/share/tpm/bin/install_plugins"
 
 # Authenticate with GitHub
 if ! gh auth status >/dev/null 2>&1; then

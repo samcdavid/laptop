@@ -38,15 +38,25 @@ sh mac 2>&1 | tee ~/laptop.log
 - Clones dotfiles repo and runs `rcup` to create symlinks
 - Includes fish config, neovim (LazyVim), tmux, ghostty, git, psqlrc, tmuxinator sessions
 
+**Git:**
+
+- Configures git-lfs hooks
+- Generates a GPG key for commit signing
+- Authenticates with GitHub and uploads the GPG key
+
 **Shell:**
 
 - Sets [fish](https://fishshell.com/) as the default shell
-- Installs [Oh My Fish](https://github.com/oh-my-fish/oh-my-fish)
+- Installs [Oh My Fish](https://github.com/oh-my-fish/oh-my-fish) and all packages from the OMF bundle
+
+**Tmux:**
+
+- Installs TPM plugins automatically
 
 **Version management ([asdf](https://asdf-vm.com/)):**
 
 - Plugins: ruby, nodejs, erlang, elixir, python, golang, terraform
-- Installs latest Node.js
+- Installs all language versions from `~/.tool-versions`
 
 ## Customize
 
@@ -56,8 +66,6 @@ The script will source `~/.laptop.local` if it exists. Put any additional setup 
 
 After running the script:
 
-- Update keys in GitHub
-- Update GPG signing key and auto signing
 - Setup 1Password
 
 ## Credits
