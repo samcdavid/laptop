@@ -79,7 +79,6 @@ brew "redis"
 # Cloud / infrastructure
 brew "awscli"
 brew "circleci"
-brew "nomad"
 
 # Dev tools
 brew "chroma"
@@ -149,7 +148,11 @@ fi
 set -e
 
 # Set up git-lfs hooks
-git lfs install
+if command -v git-lfs >/dev/null; then
+  git lfs install
+else
+  fancy_echo "Warning: git-lfs not found. Skipping git lfs setup."
+fi
 
 # Clone dotfiles and create symlinks
 if [ ! -d "$HOME/.dotfiles" ]; then
@@ -158,6 +161,20 @@ if [ ! -d "$HOME/.dotfiles" ]; then
 fi
 fancy_echo "Setting up dotfiles symlinks..."
 rcup -f
+
+# Authenticate with GitHub (after rcup so dotfiles gitconfig is in place first)
+if ! gh auth status >/dev/null 2>&1; then
+  fancy_echo "Authenticating with GitHub..."
+  fancy_echo "A browser window will open for you to sign in."
+  if gh auth login --web --git-protocol https -h github.com; then
+    fancy_echo "GitHub authentication successful."
+  else
+    fancy_echo "Warning: GitHub authentication failed or was skipped."
+    fancy_echo "You can authenticate later with: gh auth login"
+  fi
+fi
+# Ensure git is configured to use gh as credential helper
+gh auth setup-git
 
 # Set fish as default shell
 update_shell() {
@@ -229,18 +246,6 @@ fish -c "omf install"
 # Install tmux plugins via TPM
 fancy_echo "Installing tmux plugins..."
 "$HOMEBREW_PREFIX/opt/tpm/share/tpm/bin/install_plugins"
-
-# Authenticate with GitHub
-if ! gh auth status >/dev/null 2>&1; then
-  fancy_echo "Authenticating with GitHub..."
-  fancy_echo "A browser window will open for you to sign in."
-  if gh auth login --web --git-protocol https -h github.com; then
-    fancy_echo "GitHub authentication successful."
-  else
-    fancy_echo "Warning: GitHub authentication failed or was skipped."
-    fancy_echo "You can authenticate later with: gh auth login"
-  fi
-fi
 
 # Generate GPG key for commit signing
 GPG_EMAIL="sam@mcdavid.us"
