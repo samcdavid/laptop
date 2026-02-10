@@ -203,10 +203,14 @@ fancy_echo "Configuring asdf version manager..."
 
 install_asdf_plugin() {
   local name="$1"
-  local url="$2"
+  local url="${2:-}"
 
   if ! asdf plugin list 2>/dev/null | grep -Fq "$name"; then
-    asdf plugin add "$name" "$url"
+    if [ -n "$url" ]; then
+      asdf plugin add "$name" "$url"
+    else
+      asdf plugin add "$name"
+    fi
   fi
 }
 
@@ -214,12 +218,12 @@ install_asdf_plugin() {
 # shellcheck disable=SC1091
 . "$(brew --prefix asdf)/libexec/asdf.sh"
 
-install_asdf_plugin "ruby" "https://github.com/asdf-vm/asdf-ruby"
-install_asdf_plugin "nodejs" "https://github.com/asdf-vm/asdf-nodejs"
-install_asdf_plugin "erlang" "https://github.com/asdf-vm/asdf-erlang"
-install_asdf_plugin "elixir" "https://github.com/asdf-vm/asdf-elixir"
-install_asdf_plugin "python" "https://github.com/asdf-vm/asdf-python"
-install_asdf_plugin "golang" "https://github.com/asdf-vm/asdf-golang"
+install_asdf_plugin "ruby"
+install_asdf_plugin "nodejs"
+install_asdf_plugin "erlang"
+install_asdf_plugin "elixir"
+install_asdf_plugin "python"
+install_asdf_plugin "golang"
 install_asdf_plugin "terraform" "https://github.com/asdf-community/asdf-hashicorp"
 
 fancy_echo "Installing languages from ~/.tool-versions..."
